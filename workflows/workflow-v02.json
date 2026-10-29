@@ -1,0 +1,135 @@
+{
+  "name": "Membership Cohort Upgrade and Conversion Reporting Automation - version 02",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Membership Cohort Conversion (true free->paid)\n\nPages through all GHL contacts and computes the **real** cohort conversion:\n- **Started free** = `Proximity Fellow Expiration Date` is set (persists after upgrade)\n- **Upgraded** = SAMPLE fellowship tier is Catalyst/Core/Circle, or Membership Due Collected is set\n\nWrites Free Cohort, Cohort Upgraded to Paid, and **Cohort Conversion %** onto today's Membership Conversion row (same key as the paid-share workflow, so both merge).\n\n**Note:** the GHL token is set inside the Code node — update it there if the token is ever rotated. Runs Mon 07:00 (after the paid-share one at 06:00).",
+        "height": 300,
+        "width": 460
+      },
+      "id": "EXAMPLE_UUID_E6DEAC1A31",
+      "name": "Setup Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        288,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "EXAMPLE_UUID_0BB80C7179",
+      "name": "Weekly (Mon 07:00)1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        928,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "cl"
+      },
+      "id": "EXAMPLE_UUID_DF98798379",
+      "name": "Compute Cohort Conversion1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "EXAMPLE_RESOURCE_ID_3584EBCAFD",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "EXAMPLE_RESOURCE_ID_58F9C6AD35",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Snapshot Key"
+          ],
+          "schema": []
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "id": "EXAMPLE_UUID_18F0FE1A47",
+      "name": "Upsert Cohort %1",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1488,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Membership Cohort Conversion (true free->paid)\n\nPages through all GHL contacts and computes the **real** cohort conversion:\n- **Started free** = `Proximity Fellow Expiration Date` is set (persists after upgrade)\n- **Upgraded** = SAMPLE fellowship tier is Catalyst/Core/Circle, or Membership Due Collected is set\n\nWrites Free Cohort, Cohort Upgraded to Paid, and **Cohort Conversion %** onto today's Membership Conversion row (same key as the paid-share workflow, so both merge).\n\n**Note:** the GHL token is set inside the Code node — update it there if the token is ever rotated. Runs Mon 07:00 (after the paid-share one at 06:00).",
+        "height": 300,
+        "width": 460
+      },
+      "id": "EXAMPLE_UUID_6B9F251243",
+      "name": "Setup Notes1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        112
+      ]
+    }
+  ],
+  "connections": {
+    "Weekly (Mon 07:00)1": {
+      "main": [
+        [
+          {
+            "node": "Compute Cohort Conversion1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Cohort Conversion1": {
+      "main": [
+        [
+          {
+            "node": "Upsert Cohort %1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  }
+}
